@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TodoController {
-    @GetMapping("/todo/")
+    @GetMapping("/todos/")
     public TodoListItem getTodos() {
         return new TodoListItem(3, "test", false);
     }
