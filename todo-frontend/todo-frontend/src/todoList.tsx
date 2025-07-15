@@ -1,7 +1,10 @@
-import { useState } from "react";
-import TodoItem from "./TodoItem";
+import { useEffect, useState } from "react";
+import TodoItem from "./todoItem";
 
 export function TodoList() {
+ 
+  const [greeting, setGreeting] = useState('');
+  const [text, setText] = useState('');
   const [tasks, setTasks] = useState([
     {
       id: 1,
@@ -13,8 +16,36 @@ export function TodoList() {
       text: 'Meeting at School',
       completed: false
     }
-  ]);const [text, setText] = useState('');
-  
+  ]);
+
+// TODO, move fetches to "better" part of execution (not useEffect)
+useEffect(() => {
+  const fetchData = async () => {
+    let greetingText;
+    let todoJson;
+
+    try { 
+      greetingText = await (await fetch('http://localhost:8080/')).text();
+    } catch(error) {
+      console.log(error);
+    }
+    try {
+      todoJson = await (await fetch('http://localhost:8080/todo/')).json();
+    } catch(error) {
+      console.log(error);
+    }
+    
+    if(todoJson === undefined){
+      throw new Error("Todo undefined");
+    }
+    const newTask = { id: todoJson.id, text: todoJson.text, completed: todoJson.completed };
+
+    setGreeting(greetingText || 'Greeting Missing!');
+    setTasks([...tasks, newTask]);
+  }
+  fetchData();
+}, [])
+
   function addTask(text:string) {
     const newTask = {
       id: Date.now(),
@@ -42,6 +73,7 @@ export function TodoList() {
 
   return(
     <div className='todo-list'>
+      {greeting}
       {tasks.map(task => (
         <TodoItem 
           key={task.id}
