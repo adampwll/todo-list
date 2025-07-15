@@ -30,7 +30,7 @@ useEffect(() => {
       console.log(error);
     }
     try {
-      todoJson = await (await fetch('http://localhost:8080/todo/')).json();
+      todoJson = await (await fetch('http://localhost:8080/todos/')).json();
     } catch(error) {
       console.log(error);
     }
