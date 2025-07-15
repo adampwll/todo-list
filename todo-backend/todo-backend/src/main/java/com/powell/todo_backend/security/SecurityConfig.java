@@ -1,4 +1,4 @@
-package com.powell.todo_backend;
+package com.powell.todo_backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
