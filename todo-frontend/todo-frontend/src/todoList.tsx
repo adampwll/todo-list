@@ -1,28 +1,15 @@
 import { useEffect, useState } from "react";
-import TodoItem from "./todoItem";
+import TodoItem, { TodoItemData } from "./todoItem";
 
 export function TodoList() {
  
   const [greeting, setGreeting] = useState('');
   const [text, setText] = useState('');
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      text: 'Doctor Appointment',
-      completed: true
-    },
-    {
-      id: 2,
-      text: 'Meeting at School',
-      completed: false
-    }
-  ]);
+  const [todos, setTodos] = useState<TodoItemData[]>([]);
 
-// TODO, move fetches to "better" part of execution (not useEffect)
-useEffect(() => {
   const fetchData = async () => {
     let greetingText;
-    let todoJson;
+    let todoJsons;
 
     try { 
       greetingText = await (await fetch('http://localhost:8080/')).text();
@@ -30,55 +17,94 @@ useEffect(() => {
       console.log(error);
     }
     try {
-      todoJson = await (await fetch('http://localhost:8080/todos/')).json();
+      todoJsons = await (await fetch('http://localhost:8080/todos/')).json();
     } catch(error) {
       console.log(error);
     }
     
-    if(todoJson === undefined){
-      throw new Error("Todo undefined");
+    if(todoJsons === undefined){
+      throw new Error("Todos undefined");
     }
-    const newTask = { id: todoJson.id, text: todoJson.text, completed: todoJson.completed };
+
+    let newTodos: { id: string; text: string; completed: boolean; }[] = [];
+    
+    todoJsons.forEach((todo: { id: string; text: string; completed: boolean; }) => {
+      const newTodo = { id: todo.id, text: todo.text, completed: todo.completed }; 
+      newTodos.push(newTodo);
+    });
 
     setGreeting(greetingText || 'Greeting Missing!');
-    setTasks([...tasks, newTask]);
+    setTodos([...todos, ...newTodos]); 
   }
-  fetchData();
-}, [])
 
-  function addTask(text:string) {
-    const newTask = {
-      id: Date.now(),
+  const postTodo = (newTodo: TodoItemData) => {
+    fetch('http://localhost:8080/todos/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: newTodo.id,
+            text: newTodo.text,
+            completed: newTodo.completed
+          })
+        })
+        .then(response => response.json)
+        .then(data => console.log('Success: ', data))
+        .catch(error => console.error('Error: ', error)) 
+  }
+
+  const deleteTodo = (id: string) => {
+    fetch('http://localhost:8080/todos/', {
+      method: 'DELETE',
+      body: id
+    })
+    .then(response => response.json)
+    .then(data => console.log('Success: ', data))
+    .catch(error => console.error('Error: ', error)) 
+  }
+
+  function addTodo(text:string) {
+    const newTodo = {
+      id: Date.now().toString(),
       text,
       completed: false
     };
-    setTasks([...tasks, newTask]);
+    setTodos([...todos, newTodo]);
+
+    postTodo(newTodo);
+
     setText('');
   }
 
-  function deleteTask(id: number) {
-    setTasks(tasks.filter(task => task.id !== id));
+  function removeTodo(id: string) {
+    setTodos(todos.filter(todo => todo.id !== id));
+    deleteTodo(id);
   }
 
-  function toggleCompleted(id: number) {
-    setTasks(tasks.map(task => {
-      if(task.id === id) {
-        return {...task, completed: !task.completed};
+  function toggleCompleted(id: string) {
+    setTodos(todos.map(todo => {
+      if(todo.id === id) {
+        return {...todo, completed: !todo.completed};
       }
       else {
-        return task;
+        return todo;
       }
     }));
   }
+  
+  useEffect(() => {
+    fetchData();
+  }, [])
 
   return(
     <div className='todo-list'>
       {greeting}
-      {tasks.map(task => (
+      {todos.map(todo => (
         <TodoItem 
-          key={task.id}
-          task={task}
-          deleteTask={deleteTask}
+          key={todo.id}
+          todo={todo}
+          deleteTodo={removeTodo}
           toggleCompleted={toggleCompleted}  
         />
       ))}
@@ -86,7 +112,7 @@ useEffect(() => {
         value={text}
         onChange={e => setText(e.target.value)}
       />
-      <button onClick={() => addTask(text)}>Add</button>
+      <button onClick={() => addTodo(text)}>Add</button>
     </div>
   );
 }

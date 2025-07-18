@@ -1,23 +1,25 @@
 package com.powell.todo_backend.model;
 
+import org.springframework.data.annotation.Id;
 import java.util.Objects;
 
 public class TodoListItem {
-    private int id;
+    @Id
+    private String id;
     private String text;
     private boolean completed;
 
-    public TodoListItem(int id, String text, boolean completed) {
+    public TodoListItem(String id, String text, boolean completed) {
         this.id = id;
         this.text = text;
         this.completed = completed;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -42,7 +44,7 @@ public class TodoListItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TodoListItem that = (TodoListItem) o;
-        return id == that.id && completed == that.completed && Objects.equals(text, that.text);
+        return Objects.equals(id, that.id) && completed == that.completed && Objects.equals(text, that.text);
     }
 
     @Override

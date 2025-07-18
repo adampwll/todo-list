@@ -1,23 +1,29 @@
-interface TodoItemProps {
-  task: { id: number, text: string, completed: boolean };
-  deleteTask: (id: number) => void;
-  toggleCompleted: (id: number) => void;
+export interface TodoItemData {
+  id: string, 
+  text: string, 
+  completed: boolean
 }
 
-function TodoItem( { task, deleteTask, toggleCompleted }: TodoItemProps) {
+export interface TodoItemProps {
+  todo: TodoItemData;
+  deleteTodo: (id: string) => void;
+  toggleCompleted: (id: string) => void;
+}
+
+function TodoItem( { todo: todoItem, deleteTodo: deleteTodo, toggleCompleted }: TodoItemProps) {
   function handleChange() {
-    toggleCompleted(task.id);
+    toggleCompleted(todoItem.id);
   }
 
   return(
     <div className='todo-item'>
       <input
         type='checkbox'
-        checked={task.completed}
+        checked={todoItem.completed}
         onChange={handleChange}
       />
-      <p>{task.text}</p>
-      <button onClick={() => deleteTask(task.id)}>
+      <p>{todoItem.text}</p>
+      <button onClick={() => deleteTodo(todoItem.id)}>
         X
       </button>
     </div>
