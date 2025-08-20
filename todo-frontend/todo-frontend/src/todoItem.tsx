@@ -16,7 +16,7 @@ function TodoItem( { todo: todoItem, deleteTodo: deleteTodo, toggleCompleted }: 
   }
 
   return(
-    <div className='todo-item'>
+    <div className='flex justify-between'>
       <input
         type='checkbox'
         checked={todoItem.completed}

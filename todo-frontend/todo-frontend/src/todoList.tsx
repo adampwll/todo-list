@@ -98,7 +98,7 @@ export function TodoList() {
   }, [])
 
   return(
-    <div className='todo-list'>
+    <div className='space-x-4'>
       {greeting}
       {todos.map(todo => (
         <TodoItem 
@@ -111,6 +111,7 @@ export function TodoList() {
       <input
         value={text}
         onChange={e => setText(e.target.value)}
+        className='outline-(--foreground) outline-solid outline-1'
       />
       <button onClick={() => addTodo(text)}>Add</button>
     </div>
