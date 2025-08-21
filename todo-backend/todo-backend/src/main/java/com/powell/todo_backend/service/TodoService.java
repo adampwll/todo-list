@@ -5,9 +5,12 @@ import com.powell.todo_backend.model.TodoListItem;
 import java.util.List;
 
 public interface TodoService {
-    public List<TodoListItem> findAllTodos();
 
     public TodoListItem createTodo(TodoListItem todo);
+
+    public List<TodoListItem> findAllTodos();
+
+    public void updateTodos(TodoListItem[] todos);
 
     public void deleteTodo(String id);
 }

@@ -14,12 +14,18 @@ public class TodoServiceImpl implements TodoService {
     @Autowired
     private TodoRepository todoRepository;
 
+    public TodoListItem createTodo(TodoListItem todo) {
+        return todoRepository.insert(todo);
+    }
+
     public List<TodoListItem> findAllTodos() {
         return todoRepository.findAll();
     }
 
-    public TodoListItem createTodo(TodoListItem todo) {
-        return todoRepository.insert(todo);
+    public void updateTodos(TodoListItem[] todos) {
+        for (TodoListItem todo : todos) {
+            todoRepository.save(todo);
+        }
     }
 
     public void deleteTodo(String id) {

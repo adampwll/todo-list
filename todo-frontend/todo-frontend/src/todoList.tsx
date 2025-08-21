@@ -6,6 +6,8 @@ export function TodoList() {
   const [greeting, setGreeting] = useState('');
   const [text, setText] = useState('');
   const [todos, setTodos] = useState<TodoItemData[]>([]);
+  const [itemsToUpdate, setItemsToUpdate] = useState<Map<string, TodoItemData>>(new Map());
+  const [updateButtonDisabled, setUpdateButtonDisabled] = useState(true);
 
   const fetchData = async () => {
     let greetingText;
@@ -54,6 +56,26 @@ export function TodoList() {
         .catch(error => console.error('Error: ', error)) 
   }
 
+  function putTodos() {
+    let updateables: TodoItemData[] = [];
+    itemsToUpdate.forEach(item => updateables.push(item))
+
+    if (updateables.length < 1)
+      throw new Error("List of updatable items is empty.");
+
+    fetch('http://localhost:8080/todos/',
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateables)
+      }
+    );
+    setItemsToUpdate(new Map());
+    setUpdateButtonDisabled(true);
+  }
+
   const deleteTodo = (id: string) => {
     fetch('http://localhost:8080/todos/', {
       method: 'DELETE',
@@ -85,7 +107,12 @@ export function TodoList() {
   function toggleCompleted(id: string) {
     setTodos(todos.map(todo => {
       if(todo.id === id) {
-        return {...todo, completed: !todo.completed};
+        const toggledTodo = {...todo, completed: !todo.completed };
+        const updateCopy: Map<string, TodoItemData> = itemsToUpdate;
+        updateCopy.set(todo.id, toggledTodo);
+        setItemsToUpdate(updateCopy);
+        setUpdateButtonDisabled(false);
+        return toggledTodo;
       }
       else {
         return todo;
@@ -99,21 +126,26 @@ export function TodoList() {
 
   return(
     <div className='space-x-4'>
-      {greeting}
-      {todos.map(todo => (
-        <TodoItem 
-          key={todo.id}
-          todo={todo}
-          deleteTodo={removeTodo}
-          toggleCompleted={toggleCompleted}  
+        {greeting}
+        {todos.map(todo => (
+          <TodoItem 
+            key={todo.id}
+            todo={todo}
+            deleteTodo={removeTodo}
+            toggleCompleted={toggleCompleted}  
+          />
+        ))}
+        <input
+          value={text}
+          onChange={e => setText(e.target.value)}
+          className='outline-(--foreground) outline-solid outline-1'
         />
-      ))}
-      <input
-        value={text}
-        onChange={e => setText(e.target.value)}
-        className='outline-(--foreground) outline-solid outline-1'
-      />
-      <button onClick={() => addTodo(text)}>Add</button>
+        <button onClick={() => addTodo(text)}>Add</button>
+      <button 
+        disabled={updateButtonDisabled} 
+        onClick={() => putTodos()}
+        className='justify-end'
+      > Update </button>
     </div>
   );
 }
