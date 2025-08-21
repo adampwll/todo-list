@@ -3,10 +3,10 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "access_key" {
+variable "aws_role_arn" {
   type = string
 }
 
-variable "secret_key" {
+variable "aws_web_identity_token" {
   type = string
 }

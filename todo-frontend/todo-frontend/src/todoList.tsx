@@ -26,7 +26,7 @@ export function TodoList() {
       throw new Error("Todos undefined");
     }
 
-    let newTodos: { id: string; text: string; completed: boolean; }[] = [];
+    const newTodos: { id: string; text: string; completed: boolean; }[] = [];
     
     todoJsons.forEach((todo: { id: string; text: string; completed: boolean; }) => {
       const newTodo = { id: todo.id, text: todo.text, completed: todo.completed }; 

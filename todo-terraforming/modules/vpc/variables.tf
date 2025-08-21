@@ -1,20 +1,10 @@
 variable "environment" {
     type = string
-    default = "develop"
 }
-variable "region" {
+
+variable "project" {
     type = string
-    default = "us-east-1"
-}
-variable "aws_role_arn" {
-    type = string
-    nullable = true
-    sensitive = true
-}
-variable "aws_web_identity_token_file" {
-    type = string
-    nullable = true
-    sensitive = true
+    default = "todo-list"
 }
 
 variable "public_subnet_cidrs" {

@@ -37,6 +37,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# Ignore temporary credentials files
+*id_token.jwt
+
 #### BACKEND ####
 HELP.md
 .gradle
