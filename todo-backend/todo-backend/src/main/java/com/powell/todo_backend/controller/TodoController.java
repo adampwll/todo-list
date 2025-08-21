@@ -12,14 +12,19 @@ public class TodoController {
     @Autowired
     private TodoService todoService;
 
+    @PostMapping("/todos/")
+    public TodoListItem createTodo(@RequestBody TodoListItem todo) {
+        return todoService.createTodo(todo);
+    }
+
     @GetMapping("/todos/")
     public List<TodoListItem> getTodos() {
         return todoService.findAllTodos();
     }
 
-    @PostMapping("/todos/")
-    public TodoListItem createTodo(@RequestBody TodoListItem todo) {
-        return todoService.createTodo(todo);
+    @PutMapping("/todos/")
+    public void updateTodos(@RequestBody TodoListItem[] todos) {
+        todoService.updateTodos(todos);
     }
 
     @DeleteMapping("/todos/")
